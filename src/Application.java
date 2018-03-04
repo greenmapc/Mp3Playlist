@@ -4,15 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import exceptions.EmptyPlaylistException;
+import exceptions.NullPlaylistException;
 import exceptions.NoFileException;
 import exceptions.PresenceFileException;
 import exceptions.UnknownCommandException;
 import playlist.*;
 import tagsWork.*;
 import util.*;
-
-import javax.xml.bind.SchemaOutputResolver;
 
 /**
  * User: Anna Kuzmenko
@@ -22,6 +20,13 @@ public class Application {
     public static void main(String[] args) throws InvalidDataException, IOException, UnsupportedTagException {
         List<Mp3File> allSongs = new ArrayList<>(new Mp3Reader().readFile());
         IUserInteractor terminal = new UserInteractor();
+
+        terminal.print("Songs in directory: ");
+        for(Mp3File x : allSongs) {
+            TypeOfTag type = new TypeOfTag();
+            ID3v1 tagX = type.getTag(x);
+            System.out.println(" -  " + tagX.getArtist() + " " + tagX.getTitle());
+        }
 
         String prompt = "Enter new command or enter \"Help\"";
         PlaylistOfMp3 playlist = null;
@@ -55,13 +60,13 @@ public class Application {
 
                     case "Save playlist":
                         PlayListSaver<Mp3File> saver = new Mp3PlayListSaver();
-                        if(playlist == null) throw new EmptyPlaylistException("Command \"Save playlist\" not executed");
+                        if(playlist == null) throw new NullPlaylistException("Command \"Save playlist\" not executed");
                         saver.save(playlist.getTitle(), playlist);
                         break;
 
                     case "Rename playlist":
                         terminal.print("Enter new playlist's name");
-                        if(playlist == null) throw new EmptyPlaylistException("Command \"Rename playlist\" not executed");
+                        if(playlist == null) throw new NullPlaylistException("Command \"Rename playlist\" not executed");
                         playlist.setTitle(terminal.readCommand());
                         break;
 
@@ -94,7 +99,7 @@ public class Application {
                         terminal.print("Unknown command");
                         break;
                 }
-            } catch (EmptyPlaylistException e) {
+            } catch (NullPlaylistException e) {
                 terminal.print("! >> Playlist is not created: " + e.getMessage());
             } catch (NoFileException e) {
                 terminal.print("! >> Such song is not exist: " + e.getMessage());
@@ -110,8 +115,8 @@ public class Application {
         return new PlaylistOfMp3(name);
     }
 
-    public static boolean addSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws EmptyPlaylistException, NoFileException {
-        if(playlist == null) throw new EmptyPlaylistException("Command \"Add song\" not executed");
+    public static boolean addSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws NullPlaylistException, NoFileException {
+        if(playlist == null) throw new NullPlaylistException("Command \"Add song\" not executed");
         for(Mp3File x : allSongs) {
             TypeOfTag type = new TypeOfTag();
             ID3v1 tagX = type.getTag(x);
@@ -130,8 +135,8 @@ public class Application {
         throw new NoFileException("Command \"Add song\" not executed");
     }
 
-    public static boolean removeSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws EmptyPlaylistException, NoFileException {
-        if(playlist == null) throw new EmptyPlaylistException("Command \"Remove song\" not executed");
+    public static boolean removeSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws NullPlaylistException, NoFileException {
+        if(playlist == null) throw new NullPlaylistException("Command \"Remove song\" not executed");
         for(Mp3File x : allSongs) {
             TypeOfTag type = new TypeOfTag();
             ID3v1 tagX = type.getTag(x);
@@ -150,8 +155,8 @@ public class Application {
         throw new NoFileException("Command \"Remove song\" not executed");
     }
 
-    public static void sort(PlaylistOfMp3 playlist, String type, String type2) throws EmptyPlaylistException, UnknownCommandException {
-        if(playlist == null) throw new EmptyPlaylistException("Command \"Sort playlist\" not executed");
+    public static void sort(PlaylistOfMp3 playlist, String type, String type2) throws NullPlaylistException, UnknownCommandException {
+        if(playlist == null) throw new NullPlaylistException("Command \"Sort playlist\" not executed");
         switch (type) {
             case "Title":
                 switch (type2) {
