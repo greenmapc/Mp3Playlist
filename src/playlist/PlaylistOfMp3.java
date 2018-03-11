@@ -1,25 +1,25 @@
 package playlist;
 
-import comparators.ComparatorArtist;
-import comparators.ComparatorLengthOfTrack;
-import comparators.ComparatorTitle;
-import com.mpatric.mp3agic.Mp3File;
+import comparators.ComparatorArtistTrack;
+import comparators.ComparatorLengthOfTrackTrack;
+import comparators.ComparatorTitleTrack;
 import exceptions.PresenceFileException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * User: Anna Kuzmenko
  */
 
-public class PlaylistOfMp3 extends Playlist <Mp3File> {
+public class PlaylistOfMp3 extends Playlist <Mp3Track> {
 
     public PlaylistOfMp3(String title) {
         super(title);
     }
 
     @Override
-    public void add(Mp3File track) throws PresenceFileException {
+    public void add(Mp3Track track) throws PresenceFileException {
         if(!playlist.contains(track)) {
             playlist.add(track);
         }
@@ -27,24 +27,25 @@ public class PlaylistOfMp3 extends Playlist <Mp3File> {
     }
 
     @Override
-    public void addAll(List<Mp3File> list) {
-        for(Mp3File x : list) {
-            if(!playlist.contains(x)) {
-                playlist.add(x);
-            }
-        }
+    public void addAll(List<Mp3Track> list) {
+        playlist.addAll(list);
+        playlist = playlist.stream() //STREAM
+                            .distinct()
+                            .collect(Collectors.toList());
     }
 
     @Override
-    public void remove(Mp3File track) throws PresenceFileException {
+    public void remove(Mp3Track track) throws PresenceFileException {
         if(!playlist.contains(track)) throw new PresenceFileException("! >> Such file doesn't not exist in playlist: command \"Remove song\" not executed");
         else {
-            playlist.remove(track);
+            playlist = playlist.stream()
+                                .filter((p) -> p.getArtist().equals(track.getArtist()) && p.getTitle().equals(track.getArtist()))
+                                .collect(Collectors.toList()); //STREAM!
         }
     }
 
     public void sortByTitle () {
-        playlist.sort(new ComparatorTitle());
+        playlist.sort(new ComparatorTitleTrack());
     }
     public void sortByTitleReverse () {
         sortByTitle();
@@ -56,7 +57,7 @@ public class PlaylistOfMp3 extends Playlist <Mp3File> {
     }
 
     public void sortByArtist() {
-        playlist.sort(new ComparatorArtist());
+        playlist.sort(new ComparatorArtistTrack());
     }
     public void sortByArtistReverse() {
         sortByArtist();
@@ -64,14 +65,14 @@ public class PlaylistOfMp3 extends Playlist <Mp3File> {
     }
 
     public void sortByLengthOfTrack() {
-        playlist.sort(new ComparatorLengthOfTrack());
+        playlist.sort(new ComparatorLengthOfTrackTrack());
     }
     public void sortByLengthOfTrackReverse() {
         sortByLengthOfTrack();
         reverse();
     }
 
-    public List<Mp3File> getPlaylist() {
+    public List<Mp3Track> getPlaylist() {
         return playlist;
     }
 

@@ -1,6 +1,6 @@
 package util;
 
-import com.mpatric.mp3agic.Mp3File;
+import playlist.Mp3Track;
 import playlist.Playlist;
 
 import java.io.File;
@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * User: Anna Kuzmenko
  */
-public class Mp3PlayListSaver implements PlayListSaver <Mp3File> {
+public class Mp3PlayListSaver implements PlayListSaver <Mp3Track> {
 
-    public void save(String title, Playlist<Mp3File> playlist) throws IOException {
+    public void save(String title, Playlist<Mp3Track> playlist) throws IOException {
         File folder;
         File file;
         folder = new File("data/" + title);
@@ -27,10 +27,10 @@ public class Mp3PlayListSaver implements PlayListSaver <Mp3File> {
             i ++;
         }
 
-        List <Mp3File> list = playlist.getPlaylist();
+        List <Mp3Track> list = playlist.getPlaylist();
         folder.mkdir();
 
-        for(Mp3File x : list) {
+        for(Mp3Track x : list) {
             file = new File(x.getFilename());
             Path destDir;
             if(add == null) {

@@ -3,13 +3,13 @@ import com.mpatric.mp3agic.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import exceptions.NullPlaylistException;
 import exceptions.NoFileException;
 import exceptions.PresenceFileException;
 import exceptions.UnknownCommandException;
 import playlist.*;
-import tagsWork.*;
 import util.*;
 
 /**
@@ -18,15 +18,11 @@ import util.*;
 
 public class Application {
     public static void main(String[] args) throws InvalidDataException, IOException, UnsupportedTagException {
-        List<Mp3File> allSongs = new ArrayList<>(new Mp3Reader().readFile());
+        List<Mp3Track> allSongs = new ArrayList<>(new Mp3Reader().readFile());
         IUserInteractor terminal = new UserInteractor();
 
         terminal.print("Songs in directory: ");
-        for(Mp3File x : allSongs) {
-            TypeOfTag type = new TypeOfTag();
-            ID3v1 tagX = type.getTag(x);
-            System.out.println(" -  " + tagX.getArtist() + " " + tagX.getTitle());
-        }
+        allSongs.stream().forEach((x) -> System.out.println(" - " + x.getArtist() + " " + x.getTitle()));//STREAM
 
         String prompt = "Enter new command or enter \"Help\"";
         PlaylistOfMp3 playlist = null;
@@ -59,7 +55,7 @@ public class Application {
                         break;
 
                     case "Save playlist":
-                        PlayListSaver<Mp3File> saver = new Mp3PlayListSaver();
+                        PlayListSaver<Mp3Track> saver = new Mp3PlayListSaver();
                         if(playlist == null) throw new NullPlaylistException("Command \"Save playlist\" not executed");
                         saver.save(playlist.getTitle(), playlist);
                         break;
@@ -115,12 +111,11 @@ public class Application {
         return new PlaylistOfMp3(name);
     }
 
-    public static boolean addSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws NullPlaylistException, NoFileException {
+    public static boolean addSong(PlaylistOfMp3 playlist, String song, List<Mp3Track> allSongs) throws NullPlaylistException, NoFileException {
         if(playlist == null) throw new NullPlaylistException("Command \"Add song\" not executed");
-        for(Mp3File x : allSongs) {
-            TypeOfTag type = new TypeOfTag();
-            ID3v1 tagX = type.getTag(x);
-            String curSong = tagX.getArtist() + " " + tagX.getTitle();
+       // System.out.println(allSongs.stream().anyMatch((x) -> (x.getArtist() + " " + x.getTitle()).equals(song)));
+        for(Mp3Track x : allSongs) {
+            String curSong = x.getArtist() + " " + x.getTitle();
             if (curSong.equals(song)) {
                 try {
                     playlist.add(x);
@@ -135,12 +130,10 @@ public class Application {
         throw new NoFileException("Command \"Add song\" not executed");
     }
 
-    public static boolean removeSong(PlaylistOfMp3 playlist, String song, List<Mp3File> allSongs) throws NullPlaylistException, NoFileException {
+    public static boolean removeSong(PlaylistOfMp3 playlist, String song, List<Mp3Track> allSongs) throws NullPlaylistException, NoFileException {
         if(playlist == null) throw new NullPlaylistException("Command \"Remove song\" not executed");
-        for(Mp3File x : allSongs) {
-            TypeOfTag type = new TypeOfTag();
-            ID3v1 tagX = type.getTag(x);
-            String curSong = tagX.getArtist() + " " + tagX.getTitle();
+        for(Mp3Track x : allSongs) {
+            String curSong = x.getArtist() + " " + x.getTitle();
             if (curSong.equals(song)) {
                 try {
                     playlist.remove(x);
