@@ -1,2 +1,3 @@
 # Playlist
-Consol app for university work.
+```
+Simplest consol app for university work using mp3agic library
